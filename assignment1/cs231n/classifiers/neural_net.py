@@ -70,7 +70,9 @@ class TwoLayerNet(object):
     
     # Compute the forward pass
     scores = None
-    a2 = np.maximum(0, np.dot(X, W1) + b1) # ReLU
+    z2 = np.dot(X, W1) + b1
+    a2 = np.maximum(0, z2) # ReLU
+    
     scores = np.dot(a2, W2) + b2
     
     #############################################################################
@@ -90,7 +92,9 @@ class TwoLayerNet(object):
     # Compute the loss
     loss = None
     
-    losses = -np.log(np.exp(scores[np.arange(scores.shape[0]), y]) / np.sum(np.exp(scores), axis=1))
+    # softmax loss
+    losses = -np.log(np.exp(scores[np.arange(scores.shape[0]), y]) / np.sum(np.exp(scores), axis=1))    
+    
     loss = np.mean(losses) + reg * (np.sum(W1**2) + np.sum(W2**2))
     
     #############################################################################
@@ -107,7 +111,7 @@ class TwoLayerNet(object):
     # Backward pass: compute gradients
     grads = {}
     
-    
+    grads['']
     
     #############################################################################
     # TODO: Compute the backward pass, computing the derivatives of the weights #
