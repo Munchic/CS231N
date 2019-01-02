@@ -111,7 +111,7 @@ class TwoLayerNet(object):
     # Backward pass: compute gradients
     grads = {}
     
-    grads['']
+    grads['W2'] = 1/N * 
     
     #############################################################################
     # TODO: Compute the backward pass, computing the derivatives of the weights #
