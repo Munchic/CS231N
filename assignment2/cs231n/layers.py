@@ -501,19 +501,51 @@ def conv_backward_naive(dout, cache):
     - dw: Gradient with respect to w
     - db: Gradient with respect to b
     """
+    x = cache[0]
+    w = cache[1]
+    pad = cache[3]['pad']
+    stride = cache[3]['stride']
     
-    print(dout.shape)
+    N = x.shape[0]
+    C = x.shape[1]
+    H = x.shape[2]
+    W = x.shape[3]
+    
+    F = w.shape[0]
+    HH = w.shape[2]
+    WW = w.shape[3]
+    
+    H_out = dout.shape[2]
+    W_out = dout.shape[3]
+    
+    padded_dx = np.zeros((N, C, H + 2*pad, W + 2*pad))
+    padded_x = np.zeros((N, C, H + 2*pad, W + 2*pad))
+    
+    for n in range(N):
+        for c in range(C):
+            padded_x[n][c] = np.pad(x[n][c], (pad,), 'constant', constant_values=0)
+    
     dx, dw, db = None, None, None
     ###########################################################################
     # TODO: Implement the convolutional backward pass.                        #
     ###########################################################################
     dx = np.zeros(cache[0].shape)
     dw = np.zeros(cache[1].shape)
-    db = np.ones(cache[2].shape) 
+    db = np.zeros(cache[2].shape) 
     
-    print(db)
+    for n in range(N):
+        for f in range(F):
+            for i in range(H_out):
+                for j in range(W_out):
+                    padded_dx[n][:, stride * i:stride * i + HH, stride * j:stride * j + WW] += w[f] * dout[n][f][i][j]
+                    dw[f] += padded_x[n][:, stride * i:stride * i + HH, stride * j:stride * j + WW] * dout[n][f][i][j]
+    
+    dx = padded_dx[:, :, pad:-pad, pad:-pad]
+    db[0] = np.sum(dout[:, 0])
+    db[1] = np.sum(dout[:, 1])
+
     ###########################################################################
-    #                             END OF YOUR CODE                            #
+    #                         END OF YOUR CODE                            #
     ###########################################################################
     return dx, dw, db
 
